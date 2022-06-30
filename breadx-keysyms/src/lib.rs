@@ -105,7 +105,7 @@ impl KeyboardState {
 
     /// Refresh the keyboard mapping associated with this type, async redox.
     #[cfg(feature = "async")]
-    pub async fn refresh(&mut self, dpy: &mut impl AsyncDisplay) -> Result<()> {
+    pub async fn refresh_async(&mut self, dpy: &mut impl AsyncDisplay) -> Result<()> {
         let min_keycode = dpy.setup().min_keycode;
         let max_keycode = dpy.setup().max_keycode;
 
@@ -139,7 +139,7 @@ impl KeyboardState {
         keycode: Keycode,
         column: u8,
     ) -> Result<Keysym> {
-        let reply = self.resolve(dpy).await?;
+        let reply = self.resolve_async(dpy).await?;
         get_symbol(dpy.setup(), reply, keycode, column)
     }
 }
