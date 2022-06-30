@@ -8,7 +8,6 @@ homepage = "https://github.com/bread-graphics/breadx-keysym#readme"
 description = "A breadx library for mapping keycodes to keysyms."
 readme = "../README.md"
 authors = ["notgull <jtnunley01@gmail.com>"]
-rust-version = "1.49.0"
 
 [dependencies]
 breadx = { version = "3", default-features = false }
