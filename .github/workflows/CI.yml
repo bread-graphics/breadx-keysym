@@ -30,11 +30,8 @@ jobs:
           components: rustfmt
       - uses: Swatinem/rust-cache@v1
       - name: Run rustfmt
-        run: |
-          if ! rustfmt --check --edition 2021 $(git ls-files '*.rs'); then
-            printf "Please fix rustfmt errors.\n" >&2
-            exit 1
-          fi
+        run: cargo fmt --check
+   
   clippy:
     name: clippy
     runs-on: ubuntu-latest

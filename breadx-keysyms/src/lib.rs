@@ -6,7 +6,12 @@
 #![forbid(unsafe_code, future_incompatible, rust_2018_idioms)]
 #![no_std]
 
-use breadx::{prelude::*, display::Cookie, protocol::xproto::{GetKeyboardMappingReply, Keysym, Setup, Keycode}, Result, Error};
+use breadx::{
+    display::Cookie,
+    prelude::*,
+    protocol::xproto::{GetKeyboardMappingReply, Keycode, Keysym, Setup},
+    Error, Result,
+};
 use keysyms::*;
 
 const NO_SYMBOL: Keysym = 0;
@@ -44,7 +49,9 @@ impl KeyboardState {
     pub async fn new_async(dpy: &mut impl AsyncDisplay) -> Result<Self> {
         let min_keycode = dpy.setup().min_keycode;
         let max_keycode = dpy.setup().max_keycode;
-        let cookie = dpy.get_keyboard_mapping(min_keycode, max_keycode - min_keycode + 1).await?;
+        let cookie = dpy
+            .get_keyboard_mapping(min_keycode, max_keycode - min_keycode + 1)
+            .await?;
 
         Ok(Self {
             innards: Innards::Unresolved(cookie),
@@ -67,7 +74,10 @@ impl KeyboardState {
     }
 
     #[cfg(feature = "async")]
-    async fn resolve_async(&mut self, dpy: &mut impl AsyncDisplay) -> Result<&mut GetKeyboardMappingReply> {
+    async fn resolve_async(
+        &mut self,
+        dpy: &mut impl AsyncDisplay,
+    ) -> Result<&mut GetKeyboardMappingReply> {
         match self.innards {
             Innards::Unresolved(ref cookie) => {
                 let reply = dpy.wait_for_reply(*cookie).await?;
@@ -100,17 +110,22 @@ impl KeyboardState {
         let max_keycode = dpy.setup().max_keycode;
 
         // open up the cookie
-        let cookie = dpy.get_keyboard_mapping(min_keycode, max_keycode - min_keycode + 1).await?;
+        let cookie = dpy
+            .get_keyboard_mapping(min_keycode, max_keycode - min_keycode + 1)
+            .await?;
 
         self.innards = Innards::Unresolved(cookie);
         Ok(())
     }
 
-
-
     /// Get the keyboard symbol associated with the keycode and the
     /// column.
-    pub fn symbol(&mut self, dpy: &mut impl Display, keycode: Keycode, column: u8) -> Result<Keysym> {
+    pub fn symbol(
+        &mut self,
+        dpy: &mut impl Display,
+        keycode: Keycode,
+        column: u8,
+    ) -> Result<Keysym> {
         let reply = self.resolve(dpy)?;
         get_symbol(dpy.setup(), reply, keycode, column)
     }
@@ -118,13 +133,23 @@ impl KeyboardState {
     /// Get the keyboard symbol associated with the keycode and the
     /// column, async redox.
     #[cfg(feature = "async")]
-    pub async fn symbol_async(&mut self, dpy: &mut impl AsyncDisplay, keycode: Keycode, column: u8) -> Result<Keysym> {
+    pub async fn symbol_async(
+        &mut self,
+        dpy: &mut impl AsyncDisplay,
+        keycode: Keycode,
+        column: u8,
+    ) -> Result<Keysym> {
         let reply = self.resolve(dpy).await?;
         get_symbol(dpy.setup(), reply, keycode, column)
     }
 }
 
-fn get_symbol(setup: &Setup, mapping: &GetKeyboardMappingReply, keycode: Keycode, mut column: u8) -> Result<Keysym> {
+fn get_symbol(
+    setup: &Setup,
+    mapping: &GetKeyboardMappingReply,
+    keycode: Keycode,
+    mut column: u8,
+) -> Result<Keysym> {
     // this is mostly a port of the logic from xcb keysyms
     let mut per = mapping.keysyms_per_keycode;
     if column >= per && column > 3 {
@@ -135,7 +160,7 @@ fn get_symbol(setup: &Setup, mapping: &GetKeyboardMappingReply, keycode: Keycode
     let start = (keycode - setup.min_keycode) as usize * per as usize;
     let end = start + per as usize;
     let keysyms = &mapping.keysyms[start..end];
-    
+
     // get the alternate keysym if needed
     if column < 4 {
         if column > 1 {
@@ -195,7 +220,7 @@ pub fn is_misc_function_key(keysym: Keysym) -> bool {
 /// Tell whether a key is a modifier key.
 pub fn is_modifier_key(keysym: Keysym) -> bool {
     matches!(
-        keysym, 
+        keysym,
         KEY_Shift_L..=KEY_Hyper_R
          | KEY_ISO_Lock..=KEY_ISO_Level5_Lock
          | KEY_Mode_switch
@@ -243,15 +268,26 @@ fn convert_case(keysym: Keysym) -> (Keysym, Keysym) {
         KEY_Serbian_dje..=KEY_Serbian_dze => upper += KEY_Serbian_DJE - KEY_Serbian_dje,
         KEY_Cyrillic_YU..=KEY_Cyrillic_HARDSIGN => lower -= KEY_Cyrillic_YU - KEY_Cyrillic_yu,
         KEY_Cyrillic_yu..=KEY_Cyrillic_hardsign => upper += KEY_Cyrillic_YU - KEY_Cyrillic_yu,
-        KEY_Greek_ALPHAaccent..=KEY_Greek_OMEGAaccent => lower += KEY_Greek_alphaaccent - KEY_Greek_ALPHAaccent,
-        KEY_Greek_alphaaccent..=KEY_Greek_omegaaccent if !matches!(keysym, KEY_Greek_iotaaccentdieresis | KEY_Greek_upsilonaccentdieresis) => upper -= KEY_Greek_alphaaccent - KEY_Greek_ALPHAaccent,
+        KEY_Greek_ALPHAaccent..=KEY_Greek_OMEGAaccent => {
+            lower += KEY_Greek_alphaaccent - KEY_Greek_ALPHAaccent
+        }
+        KEY_Greek_alphaaccent..=KEY_Greek_omegaaccent
+            if !matches!(
+                keysym,
+                KEY_Greek_iotaaccentdieresis | KEY_Greek_upsilonaccentdieresis
+            ) =>
+        {
+            upper -= KEY_Greek_alphaaccent - KEY_Greek_ALPHAaccent
+        }
         KEY_Greek_ALPHA..=KEY_Greek_OMEGA => lower += KEY_Greek_alpha - KEY_Greek_ALPHA,
-        KEY_Greek_alpha..=KEY_Greek_omega if !matches!(keysym, KEY_Greek_finalsmallsigma) => upper -= KEY_Greek_alpha - KEY_Greek_ALPHA,
+        KEY_Greek_alpha..=KEY_Greek_omega if !matches!(keysym, KEY_Greek_finalsmallsigma) => {
+            upper -= KEY_Greek_alpha - KEY_Greek_ALPHA
+        }
         KEY_Armenian_AYB..=KEY_Armenian_fe => {
             lower |= 1;
             upper &= !1;
         }
-        _ => {},
+        _ => {}
     }
 
     (upper, lower)
