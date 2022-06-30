@@ -1,9 +1,14 @@
 [package]
 name = "breadx-keysyms"
 version = "0.1.0"
-edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+edition = "2018"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/bread-graphics/breadx-keysym"
+homepage = "https://github.com/bread-graphics/breadx-keysym#readme"
+description = "A breadx library for mapping keycodes to keysyms."
+readme = "../README.md"
+authors = ["notgull <jtnunley01@gmail.com>"]
+rust-version = "1.49.0"
 
 [dependencies]
 breadx = { version = "3", default-features = false }
@@ -11,3 +16,6 @@ breadx = { version = "3", default-features = false }
 [features]
 default = []
 async = ["breadx/async"]
+
+[package.metadata.docs.rs]
+all-features = true
