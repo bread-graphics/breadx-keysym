@@ -1,7 +1,11 @@
-# breadx-keysym
+# breadx-keysyms
 
-This crate provides an arry of key symbols to be used in `breadx`, as well as a tructure for keeping track of the available keycodes.
+This crate provides keyboard symbols for [`breadx`], in addition to convenience functions
+and a structure for managing keyboard state.
 
 ## License
 
-MIT/Apache2
+MIT/Apache2 License
+
+[`breadx`]: https://crates.io/crates/breadx
+>>>>>>> 8a0d7a6 (prepare for release)

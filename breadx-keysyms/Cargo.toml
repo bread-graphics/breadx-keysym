@@ -7,3 +7,7 @@ edition = "2021"
 
 [dependencies]
 breadx = { path = "../../breadx/breadx", default-features = false }
+
+[features]
+default = []
+async = ["breadx/async"]

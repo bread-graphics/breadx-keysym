@@ -6,7 +6,7 @@
 #![forbid(unsafe_code, future_incompatible, rust_2018_idioms)]
 #![no_std]
 
-use breadx::{prelude::*, display::Cookie, protocol::xproto::{GetKeyboardMappingReply, Keysym, SetupAuthenticate, Setup, Keycode}, Result, Error};
+use breadx::{prelude::*, display::Cookie, protocol::xproto::{GetKeyboardMappingReply, Keysym, Setup, Keycode}, Result, Error};
 use keysyms::*;
 
 const NO_SYMBOL: Keysym = 0;
@@ -39,11 +39,38 @@ impl KeyboardState {
         })
     }
 
+    /// Create a new `KeyboardState`, async redox.
+    #[cfg(feature = "async")]
+    pub async fn new_async(dpy: &mut impl AsyncDisplay) -> Result<Self> {
+        let min_keycode = dpy.setup().min_keycode;
+        let max_keycode = dpy.setup().max_keycode;
+        let cookie = dpy.get_keyboard_mapping(min_keycode, max_keycode - min_keycode + 1).await?;
+
+        Ok(Self {
+            innards: Innards::Unresolved(cookie),
+        })
+    }
+
     /// Get the resolved keyboard mapping.
     fn resolve(&mut self, dpy: &mut impl Display) -> Result<&mut GetKeyboardMappingReply> {
         match self.innards {
             Innards::Unresolved(ref cookie) => {
                 let reply = dpy.wait_for_reply(*cookie)?;
+                self.innards = Innards::Resolved(reply);
+                match &mut self.innards {
+                    Innards::Resolved(reply) => Ok(reply),
+                    _ => unreachable!(),
+                }
+            }
+            Innards::Resolved(ref mut reply) => Ok(reply),
+        }
+    }
+
+    #[cfg(feature = "async")]
+    async fn resolve_async(&mut self, dpy: &mut impl AsyncDisplay) -> Result<&mut GetKeyboardMappingReply> {
+        match self.innards {
+            Innards::Unresolved(ref cookie) => {
+                let reply = dpy.wait_for_reply(*cookie).await?;
                 self.innards = Innards::Resolved(reply);
                 match &mut self.innards {
                     Innards::Resolved(reply) => Ok(reply),
@@ -66,10 +93,33 @@ impl KeyboardState {
         Ok(())
     }
 
+    /// Refresh the keyboard mapping associated with this type, async redox.
+    #[cfg(feature = "async")]
+    pub async fn refresh(&mut self, dpy: &mut impl AsyncDisplay) -> Result<()> {
+        let min_keycode = dpy.setup().min_keycode;
+        let max_keycode = dpy.setup().max_keycode;
+
+        // open up the cookie
+        let cookie = dpy.get_keyboard_mapping(min_keycode, max_keycode - min_keycode + 1).await?;
+
+        self.innards = Innards::Unresolved(cookie);
+        Ok(())
+    }
+
+
+
     /// Get the keyboard symbol associated with the keycode and the
     /// column.
     pub fn symbol(&mut self, dpy: &mut impl Display, keycode: Keycode, column: u8) -> Result<Keysym> {
         let reply = self.resolve(dpy)?;
+        get_symbol(dpy.setup(), reply, keycode, column)
+    }
+
+    /// Get the keyboard symbol associated with the keycode and the
+    /// column, async redox.
+    #[cfg(feature = "async")]
+    pub async fn symbol_async(&mut self, dpy: &mut impl AsyncDisplay, keycode: Keycode, column: u8) -> Result<Keysym> {
+        let reply = self.resolve(dpy).await?;
         get_symbol(dpy.setup(), reply, keycode, column)
     }
 }
