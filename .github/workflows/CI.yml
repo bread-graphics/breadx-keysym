@@ -56,10 +56,9 @@ jobs:
 
   test:
     name: run tests
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest 
     strategy:
       matrix:
-        os: ubuntu-latest
         toolchain:
          - stable
          - beta

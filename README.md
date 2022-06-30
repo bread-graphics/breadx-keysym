@@ -8,4 +8,3 @@ and a structure for managing keyboard state.
 MIT/Apache2 License
 
 [`breadx`]: https://crates.io/crates/breadx
->>>>>>> 8a0d7a6 (prepare for release)
