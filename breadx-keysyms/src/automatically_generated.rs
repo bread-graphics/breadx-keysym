@@ -1,7 +1,13 @@
+
 // This file was automatically generated using keysym-generator.
 
-use breadx::protocol::xproto::Keysym;
+//               Copyright John Nunley, 2022.
+// Distributed under the Boost Software License, Version 1.0.
+//       (See accompanying file LICENSE or copy at
+//         https://www.boost.org/LICENSE_1_0.txt)
 
+use breadx::protocol::xproto::Keysym;
+        
 pub const KEY_VoidSymbol: Keysym = 0xffffff;
 pub const KEY_BackSpace: Keysym = 0xff08;
 pub const KEY_Tab: Keysym = 0xff09;

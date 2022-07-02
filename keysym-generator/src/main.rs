@@ -1,4 +1,21 @@
-// MIT/Apache2 License
+//               Copyright John Nunley, 2022.
+// Distributed under the Boost Software License, Version 1.0.
+//       (See accompanying file LICENSE or copy at
+//         https://www.boost.org/LICENSE_1_0.txt)
+
+//! A generator that takes the system keysyms and compiles them into
+//! a list of Rust constants.
+//! 
+//! For some reason, the official source of truth for X11 keysyms are
+//! the "keysymdef" files distributed in the X11 package. Parsing
+//! these files typically involves using regexes to extract the values
+//! and converting to the more important values. Why this source
+//! isn't in a more conventionally parsed format, like JSON or even
+//! XML, is a mystery.
+//! 
+//! I challenged myself to write a parser that preforms most of its
+//! processing in a single iterator combinator. I partially succeeded,
+//! but overall I lean a little too much on the last `for_each()`.
 
 use anyhow::Result;
 use regex::Regex;
@@ -29,6 +46,11 @@ fn main() -> Result<()> {
         outfile,
         "
 // This file was automatically generated using keysym-generator.
+
+//               Copyright John Nunley, 2022.
+// Distributed under the Boost Software License, Version 1.0.
+//       (See accompanying file LICENSE or copy at
+//         https://www.boost.org/LICENSE_1_0.txt)
 
 use breadx::protocol::xproto::Keysym;
         "
