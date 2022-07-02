@@ -1,4 +1,3 @@
-
 // This file was automatically generated using keysym-generator.
 
 //               Copyright John Nunley, 2022.
@@ -7,7 +6,7 @@
 //         https://www.boost.org/LICENSE_1_0.txt)
 
 use breadx::protocol::xproto::Keysym;
-        
+
 pub const KEY_VoidSymbol: Keysym = 0xffffff;
 pub const KEY_BackSpace: Keysym = 0xff08;
 pub const KEY_Tab: Keysym = 0xff09;

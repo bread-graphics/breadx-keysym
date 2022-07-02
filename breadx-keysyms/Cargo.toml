@@ -5,7 +5,7 @@
 
 [package]
 name = "breadx-keysyms"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2018"
 license = "BSL-1.0"
 repository = "https://github.com/bread-graphics/breadx-keysym"

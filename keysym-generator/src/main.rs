@@ -5,14 +5,14 @@
 
 //! A generator that takes the system keysyms and compiles them into
 //! a list of Rust constants.
-//! 
+//!
 //! For some reason, the official source of truth for X11 keysyms are
 //! the "keysymdef" files distributed in the X11 package. Parsing
 //! these files typically involves using regexes to extract the values
 //! and converting to the more important values. Why this source
 //! isn't in a more conventionally parsed format, like JSON or even
 //! XML, is a mystery.
-//! 
+//!
 //! I challenged myself to write a parser that preforms most of its
 //! processing in a single iterator combinator. I partially succeeded,
 //! but overall I lean a little too much on the last `for_each()`.
