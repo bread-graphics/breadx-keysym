@@ -1,3 +1,7 @@
+# Deprecated
+
+[`xkeysym`](https://crates.io/crates/xkeysym) implements this crate without any of the cruft.
+
 # breadx-keysyms
 
 [![crates.io][crates-badge]][crates-url]

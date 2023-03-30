@@ -6,6 +6,7 @@
 //! A library for converting keycodes to key symbols.
 
 #![allow(non_upper_case_globals)]
+#![deprecated = "the `xkeysym` crate implements this crate without any cruft"]
 #![forbid(unsafe_code, future_incompatible, rust_2018_idioms)]
 #![no_std]
 
